@@ -1,5 +1,3 @@
-package project;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -108,7 +106,7 @@ public class Reservation
 	 */
 	public boolean checkConflict(Date otherCheckIn, Date otherCheckOut) 
 	{
-		if((_checkInDate.compareTo(otherCheckOut) < 0 && _checkOutDate.compareTo(otherCheckOut) > 0) || (_checkOutDate.compareTo(otherCheckIn) > 0  && _checkInDate.compareTo(otherCheckIn) < 0)) {
+		if((_checkOutDate.after(otherCheckIn)  && _checkInDate.before(otherCheckIn)) || (_checkInDate.before(otherCheckOut) && _checkOutDate.after(otherCheckOut))) {
 			return true;
 		}
 		else
