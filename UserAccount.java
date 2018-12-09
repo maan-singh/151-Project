@@ -88,12 +88,20 @@ public class UserAccount
 	}
 
 	/**
-	 * Removes a reservation from the array list of reservations.
-	 * @param res existing reservation to be removed
+	 * Removes reservations from the array list of reservations.
+	 * @param toBeRemoved existing reservations to be removed
 	 */
-	public void removeReservation(Reservation res)
+	public void removeReservations(int[] toBeRemoved)
 	{
-		list.remove(res);
+		ArrayList<Reservation> remove = new ArrayList<Reservation>();
+		
+		for(int i = 0; i < toBeRemoved.length; i++)
+			remove.add(list.get(toBeRemoved[i]));
+		
+		
+		for(Reservation reservation: remove)
+			list.remove(reservation);
+			
 	}
 	
 	/**
