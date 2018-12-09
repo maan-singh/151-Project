@@ -72,6 +72,14 @@ public class UserAccount
 	}
 
 	/**
+	 * Sets a new password
+	 * @param pw
+	 */
+	public void setPassword(String pw)
+	{
+		password = pw;
+	}
+	/**
 	 * Gets the ID number of the user account.
 	 * @return id number of the user account
 	 */
