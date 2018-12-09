@@ -1,3 +1,4 @@
+package hotelsystem;
 
 public class Room {
 	
@@ -9,6 +10,7 @@ public class Room {
 	private int _roomNumber;
 	private double _roomPrice;
 	private RoomType _roomType;
+	private boolean isReserved;
 
 	public Room(int RoomNum, RoomType RoomType)
 	{
@@ -22,6 +24,8 @@ public class Room {
 		{
 			_roomPrice = 100.00;
 		}
+		
+		this.isReserved = false;
 	}
 	
 	public int getRoomNumber() 
@@ -52,6 +56,26 @@ public class Room {
 	public double getRoomPrice() 
 	{
 		return _roomPrice;
+	}
+	
+	
+	/**
+	 * Reserves the room, changes the isReserved status to true
+	 */
+	public void reserveRoom()
+	{
+		this.isReserved = true;
+	}
+	
+	/**
+	 * Checks if the room is reserved or not
+	 * @return boolean true or false
+	 */
+	public boolean isReserved()
+	{
+		if (isReserved  == true)
+			return true;
+		return false;
 	}
 	
 
