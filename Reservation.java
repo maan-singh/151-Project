@@ -106,12 +106,15 @@ public class Reservation
 	 */
 	public boolean checkConflict(Date otherCheckIn, Date otherCheckOut) 
 	{
-		if((_checkInDate.before(otherCheckIn) && _checkOutDate.after(otherCheckOut)) || (_checkOutDate.after(otherCheckIn)  && _checkInDate.before(otherCheckIn))) {
+		if((_checkOutDate.after(otherCheckIn)  && _checkInDate.before(otherCheckIn)) || (_checkInDate.before(otherCheckOut) && _checkOutDate.after(otherCheckOut))) {
 			return true;
-		} else {
+		}
+		else
+		{
 			return false;
 		}
 	}
+	
 	
 	public String toString() 
 	{
