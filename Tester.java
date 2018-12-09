@@ -102,9 +102,7 @@ public class Tester
 	public static void main(String[] args) throws Exception 
 	{
 		ReservationSystem model = new ReservationSystem();
-		GuestView guest = new GuestView(model);
-		ManagerView manager = new ManagerView(model);
 		
-		loginFrame(model, guest, manager);
+		loginFrame(model, new GuestView(model), new ManagerView(model));
 	}
 }
