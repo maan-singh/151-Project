@@ -7,7 +7,7 @@ import java.util.Date;
  * Represents a reservation for room
  * 
  * @author TeamVoid
- * @version 1.1
+ * @version 1.2
  */
 public class Reservation
 //implements java.io.Serializable
