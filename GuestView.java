@@ -1,5 +1,3 @@
-package project;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 //import project.UserAccount.UserAccountType;
@@ -37,7 +35,7 @@ public class GuestView extends JFrame
 	//Model
 	private ReservationSystem _reservationSystem;
 	
-	Room newRoom;
+	private Room newRoom;
 	private int rowOfSelecRoom;
 	private int rowOfSelectCal;
 	private int colOfSelectCal;
@@ -46,8 +44,8 @@ public class GuestView extends JFrame
 	private Date currentCheckOutDate;
 	private SimpleDateFormat formattor;
 
-	String currCheckIn = formattor.format(currentCheckInDate);  
-	String currCheckOut = formattor.format(currentCheckOutDate);  
+	private String currCheckIn;   
+	private String currCheckOut;  
 	
 	private boolean[] occupiedRooms;
 	
