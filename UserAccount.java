@@ -78,6 +78,16 @@ public class UserAccount
 	}
 
 	/**
+	 * Removes the reservation in oarameter
+	 * @param r
+	 */
+	public void removeReservation(Reservation r)
+	{
+		list.remove(r);
+	}
+	
+	
+	/**
 	 * Removes reservations from the array list of reservations.
 	 * @param toBeRemoved existing reservations to be removed
 	 */
