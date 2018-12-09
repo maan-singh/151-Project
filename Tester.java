@@ -1,3 +1,4 @@
+package project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,10 +22,15 @@ public class Tester
 	
 	{
 		final int FIELD_WIDTH = 5;
+		
+		final int WIDTH = 925;
+		final int HEIGHT = 575;
+		
+		//setSize(WIDTH, HEIGHT);
 		//final int ID = 0;
 		
 		//JComponents
-		JFrame loginFrame = new JFrame(); 
+		JFrame login_Frame = new JFrame(); 
 		JTextField field_SignUp = new JTextField(FIELD_WIDTH);
 		JLabel label_SignUp = new JLabel("Enter Your User Name");
 		
@@ -33,8 +39,8 @@ public class Tester
 		JButton manager_Button = new JButton("Manager");
 		
 		//FlowLayout for the frame
-		loginFrame.setLayout(new FlowLayout());
-		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		login_Frame.setLayout(new FlowLayout());
+		login_Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		
 		//When guest is chosen as a user
@@ -47,7 +53,7 @@ public class Tester
 				
 				Object[] collection = { label_SignUp, field_SignUp };
 				
-				int input = JOptionPane.showOptionDialog(loginFrame, collection, "Guest login", 
+				int input = JOptionPane.showOptionDialog(login_Frame, collection, "Guest login", 
 							JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, optionsToSign, null);
 				
 				
@@ -73,7 +79,7 @@ public class Tester
 					}
 					catch(Exception ex) 
 					{
-						JOptionPane.showMessageDialog(loginFrame, "User ID does not exist", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(login_Frame, "User ID does not exist", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}field_SignUp.setText("");
 			}
@@ -88,9 +94,10 @@ public class Tester
 		});
 	
 		//Adding the buttons to the frame
-		loginFrame.add(manager_Button);
-		loginFrame.add(guest_Button);
-		loginFrame.setVisible(true);
+		login_Frame.add(manager_Button);
+		login_Frame.add(guest_Button);
+		login_Frame.setVisible(true);
+		login_Frame.pack();
 	}
 	
 	/**
