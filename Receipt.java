@@ -1,16 +1,14 @@
 /**
- * Receipt interface
+ * Interface for a receipt.
  * @author TeamVoid
  * Interface to be used to show receipt, either Comprehensive or Simple
  */
 public interface Receipt 
 {
 	/**
-	 * printReceipt()
-	 * @param userAccount
-	 * @return String
-	 * Method to show receipt details of specific user account
+	 * Method to print the receipt that shows the balance to be paid by a user. (To be over ridden)
+	 * @param userAccount a user account
+	 * @return String a string that has the balance to be paid
 	 */
-	public String printReceipt(UserAccount userAccount);
-	
+	public String printReceipt(UserAccount userAccount);	
 }

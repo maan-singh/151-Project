@@ -1,27 +1,24 @@
-
 /**
- * ComprehensiveReceipt Class
+ * Class for a comprehensive receipt provided by the hotel staff.
  * @author TeamVoid
- * Receipt that shows more information than a SimpleReceipt
+ * Receipt that shows more information than simple receipt.
  */
-
 public class ComprehensiveReceipt implements Receipt 
 {
 	/**
-	 * printReceipt()
-	 * @param UserAccount userAccount
-	 * @return String
-	 * Method to show receipt details in a comprehensive manner
+	 * Method that prints the details of a receipt with the total balance in a Comprehensive Format.
+	 * Comprehensive Format - shows all valid reservations made by a user with the corresponding total amount due.
+	 * @param UserAccount a user account
+	 * @return a string of details of the receipt in a Comprehensive Format.
 	 */
 	public String printReceipt(UserAccount userAccount)
 	{
-		//Grab all the reservations
-		String reservationList = userAccount.getReservations();
+		String compList = userAccount.comprehensiveReceiptList(); // string that has all the reservations made by a user account
 		
 		return "Comprehensive Receipt: " + 
 				"\n\nUser: " + userAccount.getName() + 
 				"\nUserID: " + userAccount.getID() + 
-				"\nReservations:\n" + reservationList + 
+				"\nReservations:\n" + compList + 
 				"\nTotal Balance Due: $" + userAccount.getBalance();
 	}
 }
