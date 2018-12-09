@@ -1,3 +1,5 @@
+package project;
+
 import java.util.ArrayList;
 
 /**
@@ -5,13 +7,13 @@ import java.util.ArrayList;
  * @author TeamVoid
  * 
  */
-public class UserAccount 
+public class UserAccount
 {
-
+	
 	private String username; // user name of the user account
 	private String password; // password of the user account
 	private int id; // id number of the user account
-	//private static int genID = 0; 
+	private static int genID = 0; 
 	private UserAccountType userAccountType; // enum for specifying type of user (can be guest or manager)	
 	ArrayList <Reservation> list; // array list to store a list of reservations made by a user
 
@@ -22,12 +24,12 @@ public class UserAccount
 	 * @param id of the user account
 	 * @param userAccountType (guest or manager)
 	 */
-	public UserAccount(String name, String password, int id, UserAccountType userAccountType) 
+	public UserAccount(String name, String password, UserAccountType userAccountType) 
 	{
 		this.username = name;
 		this.password = password;
-		//this.id = genID++;
-		this.id = id;
+		this.id = genID++;
+		//this.id = id;
 		this.userAccountType = userAccountType;	
 		list = new ArrayList<Reservation>();
 	}
@@ -60,6 +62,14 @@ public class UserAccount
 	}
 
 	/**
+	 * Sets a new password
+	 * @param pw
+	 */
+	public void setPassword(String pw)
+	{
+		password = pw;
+	}
+	/**
 	 * Gets the ID number of the user account.
 	 * @return id number of the user account
 	 */
@@ -78,16 +88,6 @@ public class UserAccount
 	}
 
 	/**
-	 * Removes the reservation in oarameter
-	 * @param r
-	 */
-	public void removeReservation(Reservation r)
-	{
-		list.remove(r);
-	}
-	
-	
-	/**
 	 * Removes reservations from the array list of reservations.
 	 * @param toBeRemoved existing reservations to be removed
 	 */
@@ -105,11 +105,12 @@ public class UserAccount
 	}
 	
 	/**
-	 * Returns the array list of reservations made by a user.
-	 * @return the array list of reservations
+	 * Removes the reservation in oarameter
+	 * @param r
 	 */
-	public ArrayList<Reservation> getListOfReservations() {
-		return list;
+	public void removeReservation(Reservation r)
+	{
+		list.remove(r);
 	}
 
 	/**
@@ -126,6 +127,21 @@ public class UserAccount
 		return "Rooms Reserved: " + reservations;
 	}
 	
+	
+	/**
+	 * Returns the array list of reservations made by a user.
+	 * @return the array list of reservations
+	 */
+	public ArrayList<Reservation> getListOfReservations() 
+	{
+		return list;
+	}
+	
+	
+	/**
+	 * Prints a comprehensive receipt for the User Account
+	 * @return
+	 */
 	public String comprehensiveReceiptList() {
 		ArrayList<Reservation> resList = list;
 		String list = "";
