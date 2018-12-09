@@ -1,284 +1,264 @@
-import javax.swing.event.*;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.util.concurrent.TimeUnit;
+import javax.swing.event.*;
 import java.io.*;
 
 
-public class ReservationSystem implements java.io.Serializable 
+public class ReservationSystem 
+//implements java.io.Serializable 
 {
-	public static final int NUMBER_OF_ROOMS = 20;
-	
-	private Calendar calendar;
-	private Date currentDate;
-	private Date selectedDate;
-	private ArrayList<Account> accounts;
+	public static final int TOTAL_ROOMS = 20;
+	public static final int MILLISECONDS = 1000;
+	public static final int SECONDS = 60;
+	public static final int MINUTES = 60;
+	public static final int HOURS = 24;
+
+	private Date dateCurrent;
+	private Calendar cal;
+	private Date dateSelected;
+	private ArrayList<UserAccount> userAccounts;
 	private ArrayList<ChangeListener> listeners;
 	
 	public ReservationSystem() throws Exception 
 	{
-		accounts = new ArrayList<>();
-		listeners = new ArrayList<>();
-		initCalendar();
+		userAccounts = new ArrayList<UserAccount>();
+		listeners = new ArrayList<ChangeListener>();
+		//setCalendar(); //INITCALENDAR
+		cal = Calendar.getInstance();	
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		dateCurrent = cal.getTime();
+		setDateSelected(dateCurrent);
 	}
 	
-	public ArrayList<Account> getAccounts() 
-	{ 
-		return accounts; 
-	}
-	
+//	private void setCalendar() 
+//	{
+//
+//	}
 	public Calendar getCalendar() 
 	{ 
-		return calendar; 
+		return cal; 
 	}
 	
-	public void addListener(ChangeListener cl) 
+	public Date getDateSelected() {
+		return dateSelected;
+	}
+	
+	public void setDateSelected(Date d) {
+		dateSelected = d;
+	}
+	
+	public ArrayList<UserAccount> getAccounts() 
 	{ 
-		listeners.add(cl); 
+		return userAccounts; 
 	}
 	
-	public void addAccount(Account account) 
-	{
-		accounts.add(account);
-		changeMade();
+	
+	public void addListener(ChangeListener listener) 
+	{ 
+		listeners.add(listener); 
 	}
+	
+	public void addAccount(UserAccount account) 
+	{
+		userAccounts.add(account);
+		notifyListeners();
+	}
+	
+	public void notifyListeners() 
+	{
+		ChangeEvent event = new ChangeEvent(this);	
+		for(ChangeListener cl:listeners) {
+			cl.stateChanged(event);
+		}
+	}
+
+	
+	public void goToCurrent() 
+	{
+		cal = Calendar.getInstance();	
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		dateCurrent = cal.getTime();
+		setDateSelected(dateCurrent);
+	}
+	
+	public static int[] parseDatetoInt(String date) 
+	{
+		String[] arrayOfStrings=date.split("/");
+		int[] parsedDate = new int[arrayOfStrings.length];
+		
+		for (int i=0; i < parsedDate.length; i++) {
+			if (i == 0) {
+				parsedDate[0] = Integer.parseInt(arrayOfStrings[0]) - 1;
+			} else {
+				parsedDate[i] = Integer.parseInt(arrayOfStrings[i]);
+			}
+		}
+		
+//		parsedDate[0] = Integer.parseInt(temp[0]) - 1;
+//		parsedDate[1] = Integer.parseInt(temp[1]);
+//		parsedDate[2] = Integer.parseInt(temp[2]);
+			
+		return parsedDate;
+	}
+	
+	public void goToDate(String date) 
+	{
+		int[] parsedDate = parseDatetoInt(date);
+		cal.set(parsedDate[2], parsedDate[0], parsedDate[1]);
+		
+		setDateSelected(cal.getTime());
+	}
+
+	public void goToDate(int month, int day, int year) 
+	{
+		cal.set(year, month, day);
+		setDateSelected(cal.getTime());
+	}
+	
 	
 
-	public boolean[] getOccupiedRooms(Date checkInDate, Date checkOutDate) throws Exception 
+	public void previousYear() 
 	{
-		boolean[] availableRooms = new boolean[NUMBER_OF_ROOMS]; 
+		cal.add(Calendar.YEAR, -1);
+		setDateSelected(cal.getTime());
+		notifyListeners();
+	}
 	
-		Date checkIn = checkInDate;
-		Date checkOut = checkOutDate;
+	public void nextYear() 
+	{
+		cal.add(Calendar.YEAR, 1);
+		setDateSelected(cal.getTime());
+		notifyListeners();
+	}
 	
-		for(Account a : accounts) 
-		{ 
-			for(Reservation reservation : a.getReservations()) 
-			{
-				if(reservation.checkConflict(checkIn, checkOut)) 
-				{
+	public void previousMonth() 
+	{
+		cal.add(Calendar.MONTH, -1);
+		setDateSelected(cal.getTime());
+		notifyListeners();
+	}
+	
+	public void nextMonth() 
+	{
+		cal.add(Calendar.MONTH, 1);
+		setDateSelected(cal.getTime());
+		notifyListeners();
+	}
+
+
+	public boolean[] getFilledRooms(Date checkInD, Date checkOutD) throws Exception 
+	{
+		boolean[] availableRooms = new boolean[TOTAL_ROOMS]; 
+		Date checkIn = checkInD;
+		Date checkOut = checkOutD;
+	
+		for (UserAccount acc: userAccounts) { 
+			for (Reservation reservation : acc.getListOfReservations()) {
+				if(reservation.checkConflict(checkIn, checkOut)) {
 					availableRooms[reservation.getRoom().getRoomNumber()] = true;
-				}
-				else
-				{
+				} else {
 					availableRooms[reservation.getRoom().getRoomNumber()] = false;
 				}
 			}
 		}
-		
 		return availableRooms;
 	}
 
-	public Account getAccountByID(int id) 
-	{
-		return accounts.get(id);
+	public UserAccount getAccountByID(int id) {
+		return userAccounts.get(id);
 	}
-
-	public void findAndRemoveReservation(Reservation toRemove) 
-	{
-		for(Account account : accounts) 
-		{
-			for(Reservation r : account.getReservations()) 
-			{
-				if(r.equals(toRemove))
-					account.removeReservation(r);
+	
+	public void removeReservation(Reservation res) {
+		for(UserAccount acc:userAccounts) {
+			for(Reservation r:acc.getListOfReservations()) {
+				if(r.equals(res))
+					acc.removeReservation(r);
 			}
 		}
-		changeMade();
+		notifyListeners();
 	}
 	
-	public ArrayList<Reservation> getReservationsByRoomNumber(int number) 
-	{
-		ArrayList<Reservation> temp = new ArrayList<>();
-		
-		for(Account account : accounts) 
-		{
-			for(Reservation reservation : account.getReservations()) 
-			{
-				if(reservation.getRoom().getRoomNumber() == number)
-					temp.add(reservation);
+	public ArrayList<Reservation> getReservationsByRoomNumber(int num) {
+		ArrayList<Reservation> reservationsByRoomNumber= new ArrayList<Reservation>();
+		for(UserAccount acc:userAccounts) {
+			for(Reservation r:acc.getListOfReservations()) {
+				if(r.getRoom().getRoomNumber() == num)
+					reservationsByRoomNumber.add(r);
 			}
-		}
-		
-		return temp;
+		}	
+		return reservationsByRoomNumber;
 	}
 	
-	
-	public ArrayList<Reservation> getReservationsByDate(Date date) 
-	{
-		ArrayList<Reservation> temp = new ArrayList<>();
-		
-		for(Account account : accounts) 
-		{
-			for(Reservation reservation : account.getReservations()) 
-			{
-				if(date.compareTo(reservation.getCheckInDate()) >= 0 && date.compareTo(reservation.getCheckOutDate()) <= 0)
-				{
-					temp.add(reservation);
+	public ArrayList<Reservation> getReservationsByDate(Date d) {
+		ArrayList<Reservation> reservationsByDate= new ArrayList<Reservation>();	
+		for(UserAccount acc:userAccounts) {
+			for(Reservation r:acc.getListOfReservations()) {
+				if(d.compareTo(r.getCheckOutDate()) <= 0 && d.compareTo(r.getCheckInDate()) >= 0) {
+					reservationsByDate.add(r);
 				}
 			}
 		}
-		return temp;
+		return reservationsByDate;
 	}
 	
-	public ArrayList<Reservation> getAllReservations() 
-	{
-		ArrayList<Reservation> temp = new ArrayList<>();
-	
-		for(Account account : accounts) {
-			for(Reservation reservation : account.getReservations()) 
-			{
-				temp.add(reservation);
+	public ArrayList<Reservation> getReservations() {
+		ArrayList<Reservation> allReservations= new ArrayList<Reservation>();
+		for(UserAccount acc:userAccounts) {
+			for(Reservation r:acc.getListOfReservations()) {
+				allReservations.add(r);
 			}
 		}
-		return temp;
+		return allReservations;
 	}
 	
-	
-	public boolean checkStayValidity(Date checkIn, Date checkOut) 
-	{
+	//check validity of stay
+	public boolean canStay(Date checkInD,Date checkOutD) {
 		Date checkInDate = null;
 		Date checkOutDate = null;
 		
 		try {
-			checkInDate = checkIn;
-			checkOutDate = checkOut;
-		} 
-		catch (Exception e) 
-		{
+			checkInDate = checkInD;
+			checkOutDate = checkOutD;
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		Date today = new Date();
 		
-		if(today.before(checkInDate) || today.before(checkOutDate))
-		{
+		int differenceTime=(int)(checkOutDate.getTime()-checkInDate.getTime());
+		int differenceDays=(int)((differenceTime)/(MILLISECONDS*SECONDS*MINUTES*HOURS));	
+		if(differenceDays>=60) {
 			return false;
 		}
-		
-		int diffInDays = (int)( (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24) );
-		
-		if(diffInDays >= 60)
-		{
+		if(today.before(checkOutDate) || today.before(checkInDate)){
 			return false;
 		}
 		return true;
 	}
 	
-
-	public void goToCurrent() 
-	{
-		initCalendar();
-	}
-	
-
-	public void goToDate(String date) 
-	{
-		int[] parsed = parseDate(date);
-		calendar.set(parsed[2], parsed[0], parsed[1]);
-		
-		selectedDate = calendar.getTime();
-	}
-	
-	
-
-	public void goToDate(int month, int day, int year) 
-	{
-		calendar.set(year, month, day);
-		selectedDate = calendar.getTime();
-	}
-
-	
-	public void nextMonth() 
-	{
-		calendar.add(Calendar.MONTH, 1);
-		selectedDate = calendar.getTime();
-		changeMade();
-	}
-	
-
-	public void previousMonth() 
-	{
-		calendar.add(Calendar.MONTH, -1);
-		selectedDate = calendar.getTime();
-		changeMade();
-	}
-	
-
-	public void nextYear() 
-	{
-		calendar.add(Calendar.YEAR, 1);
-		selectedDate = calendar.getTime();
-		changeMade();
-	}
-	
-
-	public void previousYear() 
-	{
-		calendar.add(Calendar.YEAR, -1);
-		selectedDate = calendar.getTime();
-		changeMade();
-	}
-	
-
-	public static int[] parseDate(String date) 
-	{
-		String[] temp = date.split("/");
-		int[] parsed = new int[temp.length];
-		
-		parsed[0] = Integer.parseInt(temp[0]) - 1;
-		parsed[1] = Integer.parseInt(temp[1]);
-		parsed[2] = Integer.parseInt(temp[2]);
-			
-		return parsed;
-	}
-	
-	public void changeMade() 
-	{
-		ChangeEvent event = new ChangeEvent(this);
-		
-		for(ChangeListener changeListener : listeners) {
-			changeListener.stateChanged(event);
-		}
-	}
-	
-
-	private void initCalendar() 
-	{
-		calendar = Calendar.getInstance();
-	
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		
-		currentDate = calendar.getTime();
-		selectedDate = currentDate;
-	}
-	
-
-	public void load() throws IOException, ClassNotFoundException
-	{
-         FileInputStream fileIn = new FileInputStream("reservation.ser");
-         ObjectInputStream in = new ObjectInputStream(fileIn);
-         this.accounts = (ArrayList<Account>) in.readObject();
+	public void loadReservations() throws IOException, ClassNotFoundException {
+         FileInputStream f=new FileInputStream("reservation.ser");
+         ObjectInputStream in=new ObjectInputStream(f);
+         this.userAccounts=(ArrayList<UserAccount>) in.readObject();
          in.close();
-         fileIn.close();
-         System.out.printf("Data has been loaded. \n");
+         f.close();
+         System.out.printf("DATA LOADED. \n");
 	}
-
 	
-	public void save()
-	{
+	public void saveReservations() {
 		try {
-	         FileOutputStream fileOut = new FileOutputStream("reservation.ser");
-	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
-	         out.writeObject(this.accounts);
+	         FileOutputStream f=new FileOutputStream("reservation.ser");
+	         ObjectOutputStream out=new ObjectOutputStream(f);
+	         out.writeObject(this.userAccounts);
 	         out.close();
-	         fileOut.close();
-	         System.out.printf("Data has been saved. \n");
+	         f.close();
+	         System.out.printf("DATA SAVED. \n");
 	    }
 		catch(IOException ioException) 
 		  {
