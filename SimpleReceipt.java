@@ -1,15 +1,19 @@
 import java.util.ArrayList;
+
 /**
- * @author Brogrammers
- * 
- * Concrete strategy which creates a receipt showing name, id, reserved rooms and total for the transaction.
- *
+ * SimpleReceipt
+ * @author TeamVoid
+ * Class that shows a simple list of reservations for a given user and the total 
  */
 public class SimpleReceipt implements Receipt 
 {
-	public String showReceipt(Account account)
+	public String printReceipt(UserAccount userAccount)
 	{	
-		return "Simple Receipt:\nUser: " + account.getName() + "\nID: " + account.getID() + "\nList of reserved rooms:\n" + account.getRoomsReserved() + "\nTotal Due for this Transaction: $" + account.getTotalBalance();
+		return "Simple Receipt:" + 
+				"\nUser: " + userAccount.getName() + 
+				"\nUserID: " + userAccount.getID() + 
+				"\nReserved Rooms:\n" + userAccount.getRoomsReserved() + 
+				"\nTotal Balance Due: $" + userAccount.getTotalBalance();
 	
 	}
 }

@@ -1,21 +1,33 @@
 import java.util.ArrayList;
+
 /**
- * @author Brogrammers
- * 
- * Concrete strategy which creates a receipt that includes name, id, all reservations and total cost
- *
+ * ComprehensiveReceipt Class
+ * @author TeamVoid
+ * Receipt that shows more information than a SimpleReceipt
  */
+
 public class ComprehensiveReceipt implements Receipt 
 {
-	public String showReceipt(Account account)
+	/**
+	 * printReceipt()
+	 * @param UserAccount userAccount
+	 * @return String
+	 * Method to show receipt details in a comprehensive manner
+	 */
+	public String printReceipt(UserAccount userAccount)
 	{
-			ArrayList<Reservation> reservations = account.getReservations();
-			String list = "";
-			
-			for(Reservation r : reservations) {
-				list += r + "\n";
-			}
-			
-			return "Comprehensive Receipt: \n\nUser: " + account.getName() + "\nID: " + account.getID() + "\nReservations:\n" + list + "\nTotal Amount Due: $" + account.getTotalBalance();
+		//Grab all the reservations and put them in a String list
+		ArrayList<Reservation> reservations = userAccount.getReservations();
+		String reservationList = "";
+
+		for(Reservation reservation : reservations) {
+			reservationList += reservation + "\n";
+		}
+		
+		return "Comprehensive Receipt: " + 
+				"\n\nUser: " + userAccount.getName() + 
+				"\nUserID: " + userAccount.getID() + 
+				"\nReservations:\n" + reservationList + 
+				"\nTotal Balance Due: $" + userAccount.getTotalBalance();
 	}
 }
