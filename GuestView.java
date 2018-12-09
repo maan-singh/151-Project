@@ -137,7 +137,7 @@ public class GuestView extends JFrame
 								throw new Exception();
 								
 						bool = model.getFilledRooms(currentCheckInDate, currentCheckOutDate);
-						availableRoomsArea.setText(printAvailableRooms(bool, roomType));
+						//availableRoomsArea.setText(printAvailableRooms(bool, roomType));
 						occupiedRooms = bool;
 						
 						
@@ -327,29 +327,5 @@ public class GuestView extends JFrame
 		updateViewCancelModel();
 	}
 	
-	private String printAvailableRooms(boolean[] rooms, String roomType) {
-		String roomsList = "";
-		int startingIndex, endingIndex;
-		
-		if(roomType.equalsIgnoreCase("L")) {
-			startingIndex = 0;
-			endingIndex = rooms.length / 2;
-		}
-		else {
-			startingIndex = rooms.length / 2;
-			endingIndex = rooms.length;
-		}
-		
-		for(int i = startingIndex; i < endingIndex; i++) {
-			if(!rooms[i]) {
-				roomsList += "Room " + (i + 1) + "\n";
-			}
-		}
-		
-		if(roomsList.equals(""))
-			return "There are no such rooms available";
-		
-		return roomsList;
-	}
 	
 }
