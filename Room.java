@@ -1,20 +1,32 @@
-
+/**
+ * Class to depict a room in the hotel.
+ * @author TeamVoid
+ */
 public class Room {
 	
+	/**
+	 * Enum declaration to differentiate between types of rooms available in the hotel. Options are Economic and Luxurious.
+	 * @author TeamVoid
+	 */
 	enum RoomType {
 		  Economic,
 		  Luxurious
 		}
 	
-	private int _roomNumber;
-	private double _roomPrice;
-	private RoomType _roomType;
-
+	private int _roomNumber; // the room number of the room (ranging from 1-20)
+	private double _roomPrice; // the price of the room (for Economic - $100 & for Luxurious - $300 per night)
+	private RoomType _roomType; // the type or room. Economic or Luxurious.
+	
+	/**
+	 * Constructor for a Room with a room number and type specified.
+	 * @param RoomNum the number of the room (1-20)
+	 * @param RoomType the type of room (Economic or Luxurious)
+	 */
 	public Room(int RoomNum, RoomType RoomType)
 	{
 		_roomNumber = RoomNum;
 		_roomType = RoomType;
-		if(_roomType == RoomType.Luxurious)
+		if(_roomType == Room.RoomType.Luxurious)
 		{
 			_roomPrice = 300.00;
 		}
@@ -53,6 +65,4 @@ public class Room {
 	{
 		return _roomPrice;
 	}
-	
-
 }
