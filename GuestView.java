@@ -135,10 +135,10 @@ public class GuestView extends JFrame
 					
 					try 
 					{
-						if(model.checkStayValidity(checkIn, checkOut))
+						if(model.canStay(currentCheckInDate, currentCheckOutDate))
 								throw new Exception();
 								
-						bool = model.getOccupiedRooms(checkIn, checkOut);
+						bool = model.getFilledRooms(currentCheckInDate, currentCheckOutDate);
 						availableRoomsArea.setText(printAvailableRooms(bool, roomType));
 						occupiedRooms = bool;
 						
@@ -181,7 +181,7 @@ public class GuestView extends JFrame
 							Reservation reservation = new Reservation(currentCheckInDate, currentCheckOutDate, newRoom);
 							
 							user.addReservation(reservation);
-							model.changeMade();
+							model.notifyListeners();
 							
 							updateViewCancelModel();
 							String[] options = { "Simple Receipt", "Comprehensive Receipt" };
@@ -295,7 +295,7 @@ public class GuestView extends JFrame
 				user.removeReservations(cancelIndices);
 				
 				updateViewCancelModel();
-				_reservationSystem.changeMade();
+				_reservationSystem.notifyListeners();
 			}
 		});
 		
