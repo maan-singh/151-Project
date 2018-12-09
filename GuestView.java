@@ -35,7 +35,7 @@ public class GuestView extends JFrame
 	//Model
 	private ReservationSystem _reservationSystem;
 	
-	private Room newRoom;
+	Room newRoom;
 	private int rowOfSelecRoom;
 	private int rowOfSelectCal;
 	private int colOfSelectCal;
@@ -44,8 +44,8 @@ public class GuestView extends JFrame
 	private Date currentCheckOutDate;
 	private SimpleDateFormat formattor;
 
-	private String currCheckIn;   
-	private String currCheckOut;  
+//	String currCheckIn = formattor.format(currentCheckInDate);  
+//	String currCheckOut = formattor.format(currentCheckOutDate);  
 	
 	private boolean[] occupiedRooms;
 	
@@ -141,8 +141,8 @@ public class GuestView extends JFrame
 						occupiedRooms = bool;
 						
 						
-						currCheckIn = checkIn;
-						currCheckOut = checkOut;
+//						currCheckIn = checkIn;
+//						currCheckOut = checkOut;
 					}
 					
 					

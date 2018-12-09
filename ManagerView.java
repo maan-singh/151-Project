@@ -1,54 +1,71 @@
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Calendar;
+import java.util.*;
 import javax.swing.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 
 /**
  * ManagerView
  * @author TeamVoid
- * View meant for manager user accounts to view additional information and have additional functionality
+ * View meant for manager user accounts to view additional information and have additional functionality.
  */
-public class ManagerView extends JFrame 
-{
-	private final int WIDTH = 925;
-	private final int HEIGHT = 575;
-	private final int TEXT_AREA_WIDTH = 25;
-	private final int TEXT_AREA_HEIGHT = 40;
+public class ManagerView extends JFrame {
+	// width of text area
+	private final int WIDTH_TEXTAREA = 25;
+	// height of text area
+	private final int HEIGHT_TEXTAREA = 40;
+	// height of each cell in the calendar
 	private final int CALENDAR_CELL_HEIGHT = 50;
+	// width of frame
+	private final int WIDTH = 925;
+	// width of height
+	private final int HEIGHT = 575;
+	// array of strings representing all the months of the year
 	private final String[] MONTHS = { 
 			"January","February","March","April","May","June","July","August","September","October","November","December"};
+	// array od strings of all days in a week
 	private final String[] DAYS = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-	private final int DAYS_PER_WEEK = 7;
-	private final int WEEKS_PER_MONTH = 6;
-
+	// the number of days in a week
+	private final int DAYS_IN_WEEK = 7;
+	// the number of weeks in a month
+	private final int WEEKS_IN_MONTH = 6;
+	// a reservation system object
 	private ReservationSystem _reservationSystem;
-	
+	// JLabel for month and year (calendar)
 	private JLabel monthYearJLabel;
+	// JLabel for room numbers
 	private JLabel roomNumbersJLabel;
-	
+	// JTextArea for calendar information
 	private JTextArea calendarInformationJTextArea;
+	// JTextArea for rooms information
 	private JTextArea roomsInformationJTextArea;
-	
+	// JButton to navigate to previous month
 	private JButton previousMonthJButton; 
+	// JButton to navigate to next month
 	private JButton nextMonthJButton;
+	// JButton to navigate to previous year
 	private JButton previousYearJButton; 
-	private JButton nextYearJButton; 
+	// JButton to navigate to next year
+	private JButton nextYearJButton;
+	// JButton to save
 	private JButton saveJButton;
+	// JButton to load
 	private JButton loadJButton;
-	
+	// Scroll Pane for Calendar
 	private JScrollPane calendarJScrollPane; 
+	// Scroll Pane for Rooms
 	private JScrollPane roomsJScrollPane;
-	
+	// JPanel to paint a calendar
 	private JPanel calendarJPanel;
+	// JPanel to store buttons of calendar
 	private JPanel calendarButtonsJPanel; 
+	// JPanel to store calendar information
 	private JPanel calendarInformationJPanel; 
+	// JPanel to store rooms
 	private JPanel roomsJPanel;
+	// JPanel to store room information
 	private JPanel roomsInformationJPanel;
 	
 	private DefaultTableModel calendarTableModel;
@@ -99,7 +116,7 @@ public class ManagerView extends JFrame
 		
 		calendarInformationJPanel = new JPanel(new BorderLayout());
 		
-		calendarInformationJTextArea = new JTextArea(TEXT_AREA_WIDTH, TEXT_AREA_HEIGHT);
+		calendarInformationJTextArea = new JTextArea(WIDTH_TEXTAREA, HEIGHT_TEXTAREA);
 		saveJButton = new JButton("Save everything!");
 		saveJButton.addActionListener(new ActionListener() 
 		{
@@ -141,7 +158,7 @@ public class ManagerView extends JFrame
 
 		roomsInformationJPanel = new JPanel(new BorderLayout());
 		
-		roomsInformationJTextArea = new JTextArea(TEXT_AREA_WIDTH, TEXT_AREA_HEIGHT);
+		roomsInformationJTextArea = new JTextArea(WIDTH_TEXTAREA, HEIGHT_TEXTAREA);
 		
 		roomsInformationJPanel.add(roomsInformationJTextArea, BorderLayout.CENTER);
 		roomsJPanel.add(roomsInformationJPanel);
@@ -308,7 +325,7 @@ public class ManagerView extends JFrame
 	 */
 	private Integer[][] createMonthArray() 
 	{
-		Integer[][] temp = new Integer[WEEKS_PER_MONTH][DAYS_PER_WEEK];
+		Integer[][] temp = new Integer[WEEKS_IN_MONTH][DAYS_IN_WEEK];
 		
 		int month = _reservationSystem.getCalendar().get(Calendar.MONTH);
 		int year = _reservationSystem.getCalendar().get(Calendar.YEAR);
@@ -321,9 +338,9 @@ public class ManagerView extends JFrame
 		
 		int day = 1;
 		
-		for(int i = 0; i < WEEKS_PER_MONTH; i++) 
+		for(int i = 0; i < WEEKS_IN_MONTH; i++) 
 		{
-			for(int j = 0; j < DAYS_PER_WEEK; j++) 
+			for(int j = 0; j < DAYS_IN_WEEK; j++) 
 			{
 				if((i != 0 || j >= firstDay) && (day <= tempCal.getActualMaximum(Calendar.DAY_OF_MONTH)))
 				{
