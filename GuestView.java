@@ -1,215 +1,263 @@
+package project;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
+//import project.UserAccount.UserAccountType;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
- * @author Brogrammers
- *
- * View class for the guest view portion of the program. Creates the make reservation and view cancel panels
- * and provides controllers for making, viewing and cancelling guest reservations.
+ * Guest View class when user selects to be a guest.
+ * Can make, view, and cancel reservations
+ * 
+ * @author TeamVoid
  */
-public class GuestView extends JFrame {
-	private final int WIDTH = 600;
-	private final int HEIGHT = 450;
-	private final int TEXT_AREA_WIDTH = 20;
-	private final int TEXT_AREA_HEIGHT = 30;
-	private final int ROOMS_NUMBER_OF_ROWS = 5;
+public class GuestView extends JFrame 
+{
+	
+	
+	private final int ROWS = 4;
 	private final int FIELD_WIDTH = 5;
-	private final int ROOMS_CELL_HEIGHT = 10;
+	private final int CELL_HEIGHT = 10;
 	
-	private ReservationSystem model;
-	private Account activeAccount;
-	private boolean[] currentlyOccupiedRooms;
-	private String currentCheckInDate, currentCheckOutDate;
+	private final int WIDTH = 500;
+	private final int HEIGHT = 400;
 	
-	private JButton makeReservationButton, confirmButton, cancelReservationButton;
-	private JTabbedPane guestTabs;
-	private JPanel reservationPanel, viewCancelPanel, reservationButtonPanel, roomNumberPanel;
+	private final int TEXT_AREA_WIDTH = 30;
+	private final int TEXT_AREA_HEIGHT = 20;
+	
+	
+	private UserAccount user;
+	
+	//Model
+	private ReservationSystem _reservationSystem;
+	
+	Room newRoom;
+	private int rowOfSelecRoom;
+	private int rowOfSelectCal;
+	private int colOfSelectCal;
+	
+	private Date currentCheckInDate;
+	private Date currentCheckOutDate;
+	private SimpleDateFormat formattor;
+
+	String currCheckIn = formattor.format(currentCheckInDate);  
+	String currCheckOut = formattor.format(currentCheckOutDate);  
+	
+	private boolean[] occupiedRooms;
+	
+
+	//JButtons
+	private JButton confirm_Button;
+	private JButton cancel_Button;
+	private JButton make_Button;
+	
+
+	//Panels
+	private JPanel button_Panel;
+	private JPanel roomNumber_Panel;
+	private JTabbedPane guest_Tab;
+	private JPanel res_Panel;
+	private JPanel cancel_Panel;
+	
+	//JLabels
+	private JLabel allReservations_Label;
+	private JLabel availableRooms_Label;
+	private JLabel roomNum_Label;
+	
+	
+	//JText 
+	private JTextField checkIn_Field;
+	private JTextField checkOut_Field;
 	private JTextArea availableRoomsArea;
-	private JTextField roomNumberField, checkInField, checkOutField;
-	private JLabel availableRoomsLabel, roomNumberLabel, allReservationsLabel;
-	private JComboBox<String> roomTypeComboBox;
-	private DefaultListModel<Reservation> viewReservationsModel;
-	private JList<Reservation> viewReservationsList;
+	private JTextField roomNumber_Field;
 	
-	int selectedRoomsRow, selectedCalendarRow, selectedCalendarColumn;
+	private DefaultListModel<Reservation> viewModel;
+	private JList<Reservation> viewList;
+	private JComboBox<String> roomTypeBox;
+	
+	
 
 	public GuestView(ReservationSystem model) throws Exception {
-		this.model = model;
+		this._reservationSystem = model;
 		
-		setTitle("Guest View");
-		setLayout(new FlowLayout());
-		setSize(WIDTH, HEIGHT);
-		setResizable(false);
+		user = new UserAccount("guest1", "abc123", UserAccountType.Guest);
 		
-		viewReservationsModel = new DefaultListModel<Reservation>();
-		viewReservationsList = new JList<Reservation>(viewReservationsModel);
-		activeAccount = new Account("default");							// temporary for testing purposes, remove after sign in is completed
+		this.setSize(WIDTH, HEIGHT);
+		this.setTitle("Guest");
+		this.setLayout(new FlowLayout());
+		
+		res_Panel = new JPanel(new BorderLayout());
+		guest_Tab = new JTabbedPane();
+		
+		button_Panel = new JPanel();
+		availableRoomsArea = new JTextArea(TEXT_AREA_WIDTH, TEXT_AREA_HEIGHT);
+		res_Panel.add(availableRoomsArea, BorderLayout.CENTER);
+		
+		checkIn_Field = new JTextField(FIELD_WIDTH);
+		checkOut_Field = new JTextField(FIELD_WIDTH);
+		
+		viewModel = new DefaultListModel<Reservation>();
+		viewList = new JList<Reservation>(viewModel);
+		
 		updateViewCancelModel();
 		
-		guestTabs = new JTabbedPane();
+		availableRooms_Label = new JLabel("Available rooms");
+		res_Panel.add(availableRooms_Label, BorderLayout.NORTH);
 		
-		reservationPanel = new JPanel(new BorderLayout());
+		String[] types = { "Luxurious", "Economic" };
+		roomTypeBox = new JComboBox<>(types);
 		
-		availableRoomsArea = new JTextArea(TEXT_AREA_WIDTH, TEXT_AREA_HEIGHT);
-		reservationPanel.add(availableRoomsArea, BorderLayout.CENTER);
-		
-		reservationButtonPanel = new JPanel();
-		
-		availableRoomsLabel = new JLabel("Available rooms");
-		reservationPanel.add(availableRoomsLabel, BorderLayout.NORTH);
-		
-		makeReservationButton = new JButton("Make new reservation");
-		confirmButton = new JButton("Confirm?");
-		
-		checkInField = new JTextField(FIELD_WIDTH);
-		checkOutField = new JTextField(FIELD_WIDTH);
-		String[] comboOptions = { "Luxurious", "Economic" };
-		roomTypeComboBox = new JComboBox<>(comboOptions);
+		confirm_Button = new JButton("Confirm?");
+		make_Button = new JButton("Make a reservation");
 		
 		makeViewCancelTab();
 		
-		makeReservationButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Object[] message = {"Enter check-in date:", checkInField, "Enter check-out date:", checkOutField, "Enter room type:", roomTypeComboBox};
+		
+		
+		make_Button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				Object[] collection = {"Enter check-in date:", checkIn_Field, "Enter check-out date:", checkOut_Field, "Enter room type:", roomTypeBox};
 				
-				int choice = JOptionPane.showConfirmDialog(GuestView.this, message, "Enter dates", JOptionPane.OK_CANCEL_OPTION);
-				
-				if(choice == JOptionPane.OK_OPTION) {
-					boolean[] rooms;
+				int option = JOptionPane.showConfirmDialog(GuestView.this, collection, "Enter dates", JOptionPane.OK_CANCEL_OPTION);
+				if(option == JOptionPane.OK_OPTION) 
+				{
+					boolean[] bool;
+					String roomType = (roomTypeBox.getSelectedIndex() == 0) ? "Luxirious" : "Economy";
+					String checkIn = checkIn_Field.getText();
+					String checkOut = checkOut_Field.getText();
 					
-					String checkIn = checkInField.getText();
-					String checkOut = checkOutField.getText();
-					String roomType = (roomTypeComboBox.getSelectedIndex() == 0) ? "L" : "E";
-						
-					try {
+					try 
+					{
 						if(model.checkStayValidity(checkIn, checkOut))
 								throw new Exception();
 								
-						rooms = model.getOccupiedRooms(checkIn, checkOut);
-						availableRoomsArea.setText(printAvailableRooms(rooms, roomType));
-						currentlyOccupiedRooms = rooms;
-						currentCheckInDate = checkIn;
-						currentCheckOutDate = checkOut;
-					}
-					catch(Exception ex) {
-						JOptionPane.showMessageDialog(GuestView.this, "Please enter valid date(s)", "Error", JOptionPane.ERROR_MESSAGE);
+						bool = model.getOccupiedRooms(checkIn, checkOut);
+						availableRoomsArea.setText(printAvailableRooms(bool, roomType));
+						occupiedRooms = bool;
+						
+						
+						currCheckIn = checkIn;
+						currCheckOut = checkOut;
 					}
 					
-					checkInField.setText("");
-					checkOutField.setText("");
+					
+					catch(Exception exception) 
+					{
+						JOptionPane.showMessageDialog(GuestView.this, " Enter dates to make a reservation", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					
+					
+					
+					checkIn_Field.setText("");
+					checkOut_Field.setText("");
 				}
 			}
 		});
 		
-		confirmButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int newRoomNumber;
-				try {
-					newRoomNumber = Integer.parseInt(roomNumberField.getText());
-					if(!currentlyOccupiedRooms[newRoomNumber]) {
-						String roomType = (newRoomNumber > ReservationSystem.NUMBER_OF_ROOMS / 2) ? "E" : "L";
-						try {
-							Reservation r = new Reservation(currentCheckInDate, currentCheckOutDate, roomType, newRoomNumber);
-							activeAccount.addReservation(r);
+		confirm_Button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+				int newNum = newRoom.getNiceRoomNumber();
+				
+				try 
+				{
+					newNum = Integer.parseInt(roomNumber_Field.getText());
+					
+					
+					if(!occupiedRooms[newNum]) 
+					{
+						String typeOfRoom = (newNum > ReservationSystem.TOTAL_ROOMS / 2) ? "Economy" : "Luxurious";
+						
+						try 
+						{
+							Reservation reservation = new Reservation(currentCheckInDate, currentCheckOutDate, newRoom);
+							
+							user.addReservation(reservation);
 							model.changeMade();
 							
 							updateViewCancelModel();
-							String[] choices = { "Simple Receipt", "Comprehensive Receipt" };
-							String input = (String) JOptionPane.showInputDialog(null, "Choose a Receipt Type",
-							        "Receipt Selection", JOptionPane.QUESTION_MESSAGE, null, // Use
-							                                                                        // default
-							                                                                        // icon
-							        choices, // Array of choices
-							        choices[1]); // Initial choice
+							String[] options = { "Simple Receipt", "Comprehensive Receipt" };
+							
+							String input = (String) JOptionPane.showInputDialog(null, "Choose the type of Receipt", "Receipt Type", JOptionPane.QUESTION_MESSAGE, null,  options, options[1]); 
+							
+							
 							Receipt receipt;
-							// User decides which Receipt they would like and it will print the corresponding choice
-							if (input.equals("Simple Receipt"))
-							{
+							
+							
+							//Selection for Receipt type
+							if (input.equals("Simple Receipt")){
 								receipt = new SimpleReceipt();
-								JOptionPane.showMessageDialog(GuestView.this, receipt.showReceipt(activeAccount) + "\n", "Reservation successful", JOptionPane.PLAIN_MESSAGE); // FIX BALANCE
+								JOptionPane.showMessageDialog(GuestView.this, receipt.printReceipt(user) + "\n", "Reservation Made!", JOptionPane.PLAIN_MESSAGE);
+							
 							}
-							else
-							//if (input.equals("Comprehensive Receipt"))
-							{
+								
+							else{	
 								receipt = new ComprehensiveReceipt();
-								JOptionPane.showMessageDialog(GuestView.this, receipt.showReceipt(activeAccount) + "\n", "Reservation successful", JOptionPane.PLAIN_MESSAGE); // FIX BALANCE
+								JOptionPane.showMessageDialog(GuestView.this, receipt.printReceipt(user) + "\n", "Reservation Made!", JOptionPane.PLAIN_MESSAGE);
 							}
 							
 						}
-						catch(Exception ex) {
-							JOptionPane.showMessageDialog(GuestView.this, "An error occurred", "Reservation error", JOptionPane.ERROR_MESSAGE);
+						
+						
+						
+						catch(Exception exception) 
+						{
+							JOptionPane.showMessageDialog(GuestView.this, "Error", "Reservation can not be made", JOptionPane.ERROR_MESSAGE);
 						}
 					}
+					
 				}
-				catch(NullPointerException n) {
-					JOptionPane.showMessageDialog(GuestView.this, "Please make a reservation first", "You have not made a reservation", JOptionPane.WARNING_MESSAGE);
+				
+				catch(NullPointerException nullException) 
+				{
+					JOptionPane.showMessageDialog(GuestView.this, "Error", "No reservations found", JOptionPane.WARNING_MESSAGE);
 				}
-				catch(NumberFormatException nf) {
-					JOptionPane.showMessageDialog(GuestView.this, "Please enter a valid number", "Invalid room number", JOptionPane.WARNING_MESSAGE);
+				
+				
+				catch(NumberFormatException nullFormat) 
+				{
+					JOptionPane.showMessageDialog(GuestView.this, "Enter valid selection", "Invalid Room", JOptionPane.WARNING_MESSAGE);
 				}
 				
 
 				availableRoomsArea.setText("");
-				roomNumberField.setText("");
-				currentlyOccupiedRooms = null;
+				roomNumber_Field.setText("");
+				
+				occupiedRooms = null;
 			}
 		});
 		
 		
-		reservationButtonPanel.add(makeReservationButton);
-		reservationButtonPanel.add(confirmButton);
-		reservationPanel.add(reservationButtonPanel, BorderLayout.SOUTH);
+		guest_Tab.addTab("New reservation", res_Panel);
+		guest_Tab.addTab("View/Cancel", cancel_Panel);
 		
-		roomNumberPanel = new JPanel();
 		
-		roomNumberLabel = new JLabel("Enter room number to reserve:");
-		roomNumberField = new JTextField(FIELD_WIDTH);
+		button_Panel.add(make_Button);
+		button_Panel.add(confirm_Button);
+		res_Panel.add(button_Panel, BorderLayout.SOUTH);
 		
-		roomNumberPanel.add(roomNumberLabel);
-		roomNumberPanel.add(roomNumberField);
-		reservationPanel.add(roomNumberPanel, BorderLayout.EAST);
+		
+		roomNumber_Field = new JTextField(FIELD_WIDTH);
+		roomNum_Label = new JLabel("Enter room number you want to reserve:");
+		roomNumber_Panel = new JPanel();
+		
+		roomNumber_Panel.add(roomNum_Label);
+		roomNumber_Panel.add(roomNumber_Field);
+		res_Panel.add(roomNumber_Panel, BorderLayout.EAST);
 				
-		guestTabs.addTab("New reservation", reservationPanel);
-		guestTabs.addTab("View/Cancel", viewCancelPanel);
+		this.add(guest_Tab);
 		
-		add(guestTabs);
 		
 		setLocationRelativeTo(null);
 		//setVisible(true);
-	}
-	
-	/**
-	 * Creates components of View/Cancel tab
-	 */
-	private void makeViewCancelTab() {
-		viewCancelPanel = 										new JPanel(new BorderLayout());
-		cancelReservationButton = 								new JButton("Cancel selected reservation");
-		allReservationsLabel = 									new JLabel("All reservations");
-		viewReservationsList = 									new JList<Reservation>(viewReservationsModel);
-		JScrollPane viewReservationsScrollPane = 				new JScrollPane(viewReservationsList);
-				
-		// When clicked, removes selected Reservations from activeAccount's Reservations		
-		cancelReservationButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int[] cancelIndices = viewReservationsList.getSelectedIndices();				
-				activeAccount.removeReservations(cancelIndices);
-				updateViewCancelModel();
-				model.changeMade();
-			}
-		});
-		
-		// Add components to viewCancelPanel
-		viewCancelPanel.add(viewReservationsScrollPane, BorderLayout.WEST);
-		viewCancelPanel.add(allReservationsLabel, BorderLayout.NORTH);
-		viewCancelPanel.add(cancelReservationButton, BorderLayout.SOUTH);
 	}
 	
 	/**
@@ -217,24 +265,56 @@ public class GuestView extends JFrame {
 	 */
 	public void updateViewCancelModel() {
 		
-		viewReservationsModel.clear();
+		viewModel.clear();
 		// Get activeAccount's Reservations
-		ArrayList<Reservation> viewReservationsAL = activeAccount.getReservations();
+		ArrayList<Reservation> viewReservationsAL = user.getListOfReservations();
 		
 		// Add activeAccount's Reservations to viewReservationsModel
 		for(int i = 0; i < viewReservationsAL.size(); i++) {
-			viewReservationsModel.addElement(viewReservationsAL.get(i));
+			viewModel.addElement(viewReservationsAL.get(i));
 		}	
 	}
+	
+	
+	/**
+	 * Represents the View/Cancel tab 
+	 */
+	private void makeViewCancelTab() 
+	{
+		viewList = new JList<Reservation>(viewModel);
+		JScrollPane viewReservationsScrollPane = new JScrollPane(viewList);
+		cancel_Panel = 	new JPanel(new BorderLayout());
+		cancel_Button = new JButton("Cancel selected reservation");
+		allReservations_Label = new JLabel("All reservations");
+		
+				
+		// When clicked, removes selected Reservations from activeAccount's Reservations		
+		cancel_Button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int[] cancelIndices = viewList.getSelectedIndices();				
+				user.removeReservations(cancelIndices);
+				
+				updateViewCancelModel();
+				_reservationSystem.changeMade();
+			}
+		});
+		
+		// Add components to viewCancelPanel
+		cancel_Panel.add(viewReservationsScrollPane, BorderLayout.WEST);
+		cancel_Panel.add(allReservations_Label, BorderLayout.NORTH);
+		cancel_Panel.add(cancel_Button, BorderLayout.SOUTH);
+	}
+	
+	
 	
 	/**
 	 * Sets the active account once a user signs up.
 	 * 
 	 * @param account The currently focused account
 	 */
-	public void setActiveAccount(Account account) {
-		activeAccount = account;
-		availableRoomsArea.setText("Current user: " + activeAccount.getName());
+	public void setActiveAccount(UserAccount account) {
+		user = account;
+		availableRoomsArea.setText("Current user: " + user.getName());
 		updateViewCancelModel();
 	}
 	
@@ -244,8 +324,8 @@ public class GuestView extends JFrame {
 	 * @param account The currently focused account
 	 */
 	public void setActiveAccount(int id) {
-		activeAccount = model.getAccounts().get(id);
-		availableRoomsArea.setText("Current user: " + activeAccount.getName());
+		user = _reservationSystem.getAccounts().get(id);
+		availableRoomsArea.setText("Current user: " + user.getName());
 		updateViewCancelModel();
 	}
 	
