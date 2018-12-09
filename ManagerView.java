@@ -104,7 +104,7 @@ public class ManagerView extends JFrame
 		{
 			public void actionPerformed(ActionEvent actionEvent) 
 			{
-				_reservationSystem.save();
+				_reservationSystem.saveReservations();
 				JOptionPane.showMessageDialog(ManagerView.this, "Your save was successful", "The reservations were saved", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
@@ -115,7 +115,7 @@ public class ManagerView extends JFrame
 			public void actionPerformed(ActionEvent actionEvent) 
 			{
 				try {
-					_reservationSystem.load();
+					_reservationSystem.loadReservations();
 					JOptionPane.showMessageDialog(ManagerView.this, "Loading the reservations was successful", "The reservations were loaded", JOptionPane.PLAIN_MESSAGE);
 				}
 				catch(ClassNotFoundException notFoundException) 
@@ -171,7 +171,7 @@ public class ManagerView extends JFrame
 			}
 		};
 		
-		Integer[] numberOfRooms = new Integer[ReservationSystem.NUMBER_OF_ROOMS];
+		Integer[] numberOfRooms = new Integer[ReservationSystem.TOTAL_ROOMS];
 		
 		for(int i = 0; i < numberOfRooms.length; i++) 
 		{
