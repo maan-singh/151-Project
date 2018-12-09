@@ -1,25 +1,37 @@
+package project;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Reservation implements java.io.Serializable 
+public class Reservation
+//implements java.io.Serializable
 {
 	private Date _checkInDate; 
 	private Date _checkOutDate;
 	private Room _room;
-	private Account _reservationAccount;
+	private UserAccount _reservationAccount;
+	
+	private SimpleDateFormat formattor;
 	
 	public Reservation(Date checkInDate, Date checkOutDate, Room room) throws Exception 
 	{
 		this._room = room;
 		this._checkInDate = checkInDate;
 		this._checkOutDate = checkOutDate;
+		
+		formattor = new SimpleDateFormat("MM/DD/YYYY");
 	}
 	
-	public Reservation(Date checkInDate, Date checkOutDate, Room room, Account reservationAccount) throws Exception 
+	
+	
+	public Reservation(Date checkInDate, Date checkOutDate, Room room, UserAccount reservationAccount) throws Exception 
 	{
 		this._checkInDate = checkInDate;
 		this._checkOutDate = checkOutDate;
 		this._room = room;
 		this.set_reservationAccount(reservationAccount);
+		
+		formattor = new SimpleDateFormat("MM/DD/YYYY");
 	}
 	
 	public Date getCheckInDate() 
@@ -37,6 +49,16 @@ public class Reservation implements java.io.Serializable
 		return _room;
 	}
 	
+	public UserAccount get_reservationAccount() 
+	{
+		return _reservationAccount;
+	}
+
+	public void set_reservationAccount(UserAccount _reservationAccount) 
+	{
+		this._reservationAccount = _reservationAccount;
+	}
+	
 
 	public boolean checkConflict(Date otherCheckIn, Date otherCheckOut) 
 	{
@@ -52,16 +74,9 @@ public class Reservation implements java.io.Serializable
 	public String toString() 
 	{
 		
-		return "Check-In Date: " + _checkInDate.toString() + " | Check-Out Date: " + _checkOutDate.toString() + " | Room Number: " + _room.getNiceRoomNumber() + " |";
-	}
+		return " Check In Date: " + formattor.format(_checkInDate) + "\n" + 
+				   " Check Out Date: " + formattor.format(_checkOutDate) + "\n" +
+				   " Room Number: " + getRoom();	}
 
-	public Account get_reservationAccount() 
-	{
-		return _reservationAccount;
-	}
-
-	public void set_reservationAccount(Account _reservationAccount) 
-	{
-		this._reservationAccount = _reservationAccount;
-	}
+	
 }
