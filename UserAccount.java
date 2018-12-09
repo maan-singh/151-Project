@@ -7,16 +7,6 @@ import java.util.ArrayList;
  */
 public class UserAccount 
 {
-	/**
-	 * Enum class to store 'Manager' and 'Guest' types to differentiate between kind of user accounts.
-	 * @author TeamVoid
-	 *
-	 */
-	private enum UserAccountType
-	{
-		Manager,
-		Guest
-	}
 
 	private String username; // user name of the user account
 	private String password; // password of the user account
